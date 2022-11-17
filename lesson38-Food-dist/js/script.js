@@ -136,7 +136,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //Modal window show up after 5s time
 
-  const modalTimerId = setTimeout(openModal, 5000);
+  // const modalTimerId = setTimeout(openModal, 5000);
 
   //Modal window show up when user scrolled whole page w/ scroll height method. Remove event listener after showing modal
 
@@ -151,4 +151,79 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   window.addEventListener("scroll", showModalByScroll);
+
+  //Classes for Menu cards
+
+  class MenuCard {
+    constructor(src, alt, title, descr, price, parentSelector, ...classes) {
+      this.src = src;
+      this.alt = alt;
+      this.title = title;
+      this.descr = descr;
+      this.price = price;
+      this.classes = classes;
+      this.parent = document.querySelector(parentSelector);
+      this.exchange = 40;
+      this.toUAH();
+    }
+
+    toUAH() {
+      this.price = +this.price * this.exchange;
+    }
+    render() {
+      const element = document.createElement("div");
+      //add default value for classes to prevent issues
+      if (this.classes.length === 0) {
+        this.element = "menu__item";
+        element.classList.add(this.element);
+      } else {
+        //rest(lesson49)
+        this.classes.forEach((className) => element.classList.add(className));
+      }
+
+      element.innerHTML = `
+      <img src=${this.src} alt=${this.alt}>
+      <h3 class="menu__item-subtitle">${this.title}</h3>
+          <div class="menu__item-descr">${this.descr} - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!</div>
+          <div class="menu__item-divider"></div>
+      <div class="menu__item-price">
+          <div class="menu__item-cost">Цена:</div>
+          <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+      </div>
+      `;
+      // rendering element and append to the parent element
+      this.parent.append(element);
+    }
+  }
+  // Calling render on MenuCard object (no const - one time use) and passing props
+  // card 1
+  new MenuCard(
+    "img/tabs/vegy.jpg",
+    "vegy",
+    'Меню "Фитнес"',
+    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+    9,
+    ".menu .container"
+  ).render();
+
+  //card 2
+  new MenuCard(
+    "img/tabs/elite.jpg",
+    "elite",
+    'Меню "Премиум"',
+    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+    19,
+    ".menu .container"
+  ).render();
+
+  //card 3
+
+  new MenuCard(
+    "img/tabs/post.jpg",
+    "post",
+    'Меню "Постное"',
+    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+    11,
+    ".menu .container"
+  ).render();
 });
