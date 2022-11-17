@@ -97,8 +97,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   //Modal
   const modalTrigger = document.querySelectorAll("[data-modal]"),
-    modal = document.querySelector(".modal"),
-    modalCloseBtn = document.querySelector("[data-close]");
+    modal = document.querySelector(".modal");
 
   // open modal function
   function openModal() {
@@ -120,10 +119,9 @@ window.addEventListener("DOMContentLoaded", () => {
     modal.classList.remove("show");
     document.body.style.overflow = "";
   }
-  // close modal on click outside of it
-  modalCloseBtn.addEventListener("click", closeModal);
+  // line 124 is a fix for line 313 to beign able use "×" and close modal
   modal.addEventListener("click", (e) => {
-    if (e.target === modal) {
+    if (e.target === modal || e.target.getAttribute("data-close") == "") {
       closeModal();
     }
   });
@@ -135,8 +133,7 @@ window.addEventListener("DOMContentLoaded", () => {
   });
 
   //Modal window show up after 5s time
-
-  // const modalTimerId = setTimeout(openModal, 5000);
+  const modalTimerId = setTimeout(openModal, 5000);
 
   //Modal window show up when user scrolled whole page w/ scroll height method. Remove event listener after showing modal
 
@@ -226,4 +223,116 @@ window.addEventListener("DOMContentLoaded", () => {
     11,
     ".menu .container"
   ).render();
+
+  //Lesson 53 XMLHttpRequest method (old)
+
+  const forms = document.querySelectorAll("form");
+  // messages
+  const message = {
+    loading: "img/form/spinner.svg",
+    success: "Thank you! We will contact you soon",
+    failure: "Sorry, something went wrong",
+  };
+
+  // applying function postData to all the forms
+
+  forms.forEach((item) => {
+    postData(item);
+  });
+
+  function postData(form) {
+    form.addEventListener("submit", (e) => {
+      // preventing default behavior - page reload, etc
+
+      e.preventDefault();
+
+      // working with messages + spinner.svg
+
+      const statusMessage = document.createElement("img");
+      statusMessage.src = message.loading;
+      statusMessage.style.cssText = `
+      display: block;
+      margin: 0 auto;
+      `;
+
+      //append the status message
+      // form.append(statusMessage);
+      //using different method
+      form.insertAdjacentElement("afterend", statusMessage);
+
+      const request = new XMLHttpRequest();
+      request.open("POST", "server.php");
+
+      // gathering form data w/ formData method
+      // if using XMLHttpRequest + php server dont need to use setRequestHeader
+      // request.setRequestHeader("Content-Type", "multipart/form-data");
+
+      // for JSON
+      request.setRequestHeader("Content-Type", "application/json");
+      const formData = new FormData(form);
+
+      // for JSON
+      const object = {};
+      formData.forEach(function (value, key) {
+        object[key] = value;
+      });
+      const json = JSON.stringify(object);
+      request.send(json);
+
+      // sending form for XMLHttpRequest + php use below
+      // request.send(formData);
+
+      request.addEventListener("load", () => {
+        if (request.status === 200) {
+          // console.log(request.response);
+          showThanksModal(message.success);
+
+          // reset form after success
+
+          form.reset();
+
+          // after 2s remove message
+
+          setTimeout(() => {
+            statusMessage.remove();
+          });
+        } else {
+          showThanksModal(message.failure);
+        }
+      });
+    });
+  }
+
+  //L54 - customizing modal window after submit + spinner.svg loading
+
+  function showThanksModal(message) {
+    // get the modal element
+    const prevModalDialog = document.querySelector(".modal__dialog");
+
+    // hide the modal
+    prevModalDialog.classList.add("hide");
+    // open the modal
+    openModal();
+
+    //creating new modal + adding class
+    const thanksModal = document.createElement("div");
+    thanksModal.classList.add("modal__dialog");
+    thanksModal.innerHTML = `
+      <div class="modal__content">
+        <div class="modal__close" data-close>×</div>
+        <div class="modal__title">${message}</div>
+      </div>
+    `;
+
+    //appending thanksModal
+    document.querySelector(".modal").append(thanksModal);
+
+    //remove thanksModal after 4s, switching prevModalDialog from hide to show, closing the modal
+    setTimeout(() => {
+      thanksModal.remove();
+      prevModalDialog.classList.add("show");
+      prevModalDialog.classList.remove("hide");
+      closeModal();
+    }, 4000);
+  }
 });
