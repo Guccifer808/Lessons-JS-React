@@ -409,15 +409,18 @@ window.addEventListener("DOMContentLoaded", () => {
     dotsArr.push(dot);
   }
 
+  // L65- RegExp function
+  const deleteNotDigits = (str) => +str.replace(/\D/g, "");
+
   // next button
   next.addEventListener("click", () => {
     // setting offset boundaries
     // L65 - RegExp. Removing all non digits
-    if (offset == +width.replace(/\D/g, "") * (slides.length - 1)) {
+    if (offset == deleteNotDigits(width) * (slides.length - 1)) {
       // slice to remove px from string, i.e. '500px'
       offset = 0;
     } else {
-      offset += +width.replace(/\D/g, ""); // next button to add next slide's width
+      offset += deleteNotDigits(width); // next button to add next slide's width
     }
     slidesField.style.transform = `translateX(-${offset}px)`;
 
@@ -443,9 +446,9 @@ window.addEventListener("DOMContentLoaded", () => {
   prev.addEventListener("click", () => {
     // = last slide
     if (offset == 0) {
-      offset = +width.replace(/\D/g, "") * (slides.length - 1);
+      offset = deleteNotDigits(width) * (slides.length - 1);
     } else {
-      offset -= +width.replace(/\D/g, "");
+      offset -= deleteNotDigits(width);
     }
 
     if (slideIndex == 1) {
@@ -470,7 +473,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const slideTo = e.target.getAttribute("data-slide-to");
 
       slideIndex = slideTo;
-      offset = +width.replace(/\D/g, "") * (slideTo - 1);
+      offset = deleteNotDigits(width) * (slideTo - 1);
 
       slidesField.style.transform = `translateX(-${offset}px)`;
 
