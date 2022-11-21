@@ -412,11 +412,12 @@ window.addEventListener("DOMContentLoaded", () => {
   // next button
   next.addEventListener("click", () => {
     // setting offset boundaries
-    if (offset == +width.slice(0, width.length - 2) * (slides.length - 1)) {
+    // L65 - RegExp. Removing all non digits
+    if (offset == +width.replace(/\D/g, "") * (slides.length - 1)) {
       // slice to remove px from string, i.e. '500px'
       offset = 0;
     } else {
-      offset += +width.slice(0, width.length - 2); // next button to add next slide's width
+      offset += +width.replace(/\D/g, ""); // next button to add next slide's width
     }
     slidesField.style.transform = `translateX(-${offset}px)`;
 
@@ -435,17 +436,16 @@ window.addEventListener("DOMContentLoaded", () => {
 
     //L63 - Slider dots
     // setting dots opacity
-    dotsArr.forEach((dot) => (dot.style.opacity = ".5"));
-    dotsArr[slideIndex - 1].style.opacity = "1";
+    setDotsOpacity();
   });
 
   // prev button
   prev.addEventListener("click", () => {
     // = last slide
     if (offset == 0) {
-      offset = +width.slice(0, width.length - 2) * (slides.length - 1);
+      offset = +width.replace(/\D/g, "") * (slides.length - 1);
     } else {
-      offset -= +width.slice(0, width.length - 2);
+      offset -= +width.replace(/\D/g, "");
     }
 
     if (slideIndex == 1) {
@@ -462,8 +462,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
     //L63 - Slider dots
     // setting dots opacity
-    dotsArr.forEach((dot) => (dot.style.opacity = ".5"));
-    dotsArr[slideIndex - 1].style.opacity = "1";
+    setDotsOpacity();
   });
 
   dotsArr.forEach((dot) => {
@@ -471,7 +470,7 @@ window.addEventListener("DOMContentLoaded", () => {
       const slideTo = e.target.getAttribute("data-slide-to");
 
       slideIndex = slideTo;
-      offset = +width.slice(0, width.length - 2) * (slideTo - 1);
+      offset = +width.replace(/\D/g, "") * (slideTo - 1);
 
       slidesField.style.transform = `translateX(-${offset}px)`;
 
@@ -480,9 +479,12 @@ window.addEventListener("DOMContentLoaded", () => {
       } else {
         current.textContent = slideIndex;
       }
-
-      dotsArr.forEach((dot) => (dot.style.opacity = ".5"));
-      dotsArr[slideIndex - 1].style.opacity = "1";
+      setDotsOpacity();
     });
   });
+
+  const setDotsOpacity = () => {
+    dotsArr.forEach((dot) => (dot.style.opacity = ".5"));
+    dotsArr[slideIndex - 1].style.opacity = "1";
+  };
 });
